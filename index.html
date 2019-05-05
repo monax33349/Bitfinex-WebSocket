@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WS</title>
+</head>
+<body>
+  <style>
+    #app {
+      color: #fff;
+      padding: 15px;
+      display: flex;
+      max-width: 60px;
+      justify-content: center;
+      margin: 0 auto;
+      -webkit-transition: all 700ms ease;
+      -moz-transition: all 700ms ease;
+      -ms-transition: all 700ms ease;
+      -o-transition: all 700ms ease;
+      transition: all 700ms ease;
+    }
+  </style>
+  <div id="app"></div>
+
+  <script>
+    var ws = new WebSocket("wss://api.bitfinex.com/ws");
+      ws.onopen = function(){
+        ws.send(JSON.stringify({
+            "event":"subscribe", 
+            "channel":"ticker", 
+            "pair":"ETHUSD"
+            })) 
+      };
+      
+      ws.onmessage = function(msg){
+        var response = JSON.parse(msg.data); 
+        var app = document.getElementById('app');
+        var appHtml = document.getElementById('app').innerHTML;
+        var hb = response[7];
+        if(hb != "hb") {
+          if (+appHtml < hb) { 
+            app.style.background= "green";
+          }
+          else {
+            app.style.background= "red";
+          }
+          app.innerHTML = response[7].toFixed(2);
+        }
+      };
+    </script>
+</body>
+</html>
